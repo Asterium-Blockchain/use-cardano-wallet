@@ -2,7 +2,7 @@
 
 A simple react hook to connect your application to cardano wallets. This library does not take care of transaction building. For that, you should use something like [Lucid](https://github.com/Berry-Pool/lucid).
 
-> ℹ This library does not depend of `cardano-serialization-lib`, so you don't have to worry about big budle sizes!
+> ℹ This library does not depend on `cardano-serialization-lib`, so you don't have to worry about big budle sizes!
 
 ## Installation
 
