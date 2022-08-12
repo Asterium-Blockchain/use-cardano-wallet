@@ -3,6 +3,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "private": false,
   "files": [
     "dist",
     "src"
@@ -33,7 +34,7 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "use-cardano-wallet",
+  "name": "@asterium-dev/use-cardano-wallet",
   "author": "MartinSchere",
   "module": "dist/use-cardano-wallet.esm.js",
   "size-limit": [
