@@ -30,9 +30,9 @@ const defaultOptions: UseCardanoWalletOptions = {
   // prefetchUtxosInterval: null,
 };
 
-interface ReturnVal extends Omit<State, 'connect'> {
+type ReturnVal = Omit<State, 'connect'> & {
   connect: (walletName: WalletName) => Promise<void>;
-}
+};
 
 const useCardanoWallet = ({
   autoConnect = true,

@@ -7,11 +7,16 @@ const App = () => {
   const {
     connect,
     isConnecting,
+    isConnected,
     lovelaceBalance,
     address,
     network,
     selectedWallet,
     connectedWallet,
+    api,
+    disconnect,
+    isRefetchingBalance,
+    refetchBalance,
   } = useCardanoWallet();
   return (
     <div
