@@ -7,11 +7,11 @@ A simple react hook to connect your application to cardano wallets. This library
 ## Installation
 
 ```
-npm i use-cardano-wallet
+npm i @asterium-dev/use-cardano-wallet
 ```
 
 ```
-yarn add use-cardano-wallet
+yarn add @asterium-dev/use-cardano-wallet
 ```
 
 ## Basic usage
