@@ -81,11 +81,12 @@ export const useStore = create<State>()((set, get) => ({
     );
     try {
       const api: WalletApi = await (window as any).cardano[walletName].enable();
-      const [rawAddress] = await api.getUnusedAddresses();
-      const address = fromHex(rawAddress);
-      const balance = await api.getBalance();
 
-      const decodedBalance = cbor.decode(fromHex(balance));
+      let addresses = await api.getUnusedAddresses();
+      if(addresses.length == 0)
+        addresses = await api.getUsedAddresses();
+      
+      const address = fromHex(addresses[0]);
       const words = bech32.toWords(address);
 
       const bechAddr = bech32.encode(
@@ -93,7 +94,12 @@ export const useStore = create<State>()((set, get) => ({
         words,
         130
       );
-
+      let decodedBalance = 0;
+      try{
+        const balance = await api.getBalance();
+        decodedBalance = cbor.decode(fromHex(balance)) ?? 0;
+      }catch(e){}
+      
       localStorage.setItem(localStorageKey, walletName);
 
       set(
@@ -101,7 +107,7 @@ export const useStore = create<State>()((set, get) => ({
           draft.isConnecting = false;
           draft.isConnected = true;
           draft.api = api;
-          draft.lovelaceBalance = decodedBalance[0] ?? 0;
+          draft.lovelaceBalance = decodedBalance;
           draft.address = bechAddr;
           draft.network = address[0] as NetworkId;
           draft.connectedWallet = walletName;
