@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { State, useStore } from './store';
 import { WalletName } from './typescript/cip30';
 
@@ -56,7 +57,7 @@ const useCardanoWallet = ({
         connectWithStore(connectedWalletName, localStorageKey);
       }, 10);
     }
-  }, [autoConnect, localStorageKey, (window as any).cardano]);
+  }, [autoConnect, localStorageKey, connectWithStore]);
 
   const connect = async (walletName: WalletName) => {
     await connectWithStore(walletName, localStorageKey);
