@@ -57,7 +57,7 @@ const useCardanoWallet = ({
         connectWithStore(connectedWalletName, localStorageKey);
       }, 10);
     }
-  }, [autoConnect, localStorageKey]);
+  }, [autoConnect, localStorageKey, connectWithStore]);
 
   const connect = async (walletName: WalletName) => {
     await connectWithStore(walletName, localStorageKey);
