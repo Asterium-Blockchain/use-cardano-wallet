@@ -1,9 +1,10 @@
+import { bech32 } from 'bech32';
+import cbor from 'cbor';
 import produce from 'immer';
 import create from 'zustand';
+
 import { NetworkId, WalletApi, WalletName } from '../typescript/cip30';
-import cbor from 'cbor';
 import { fromHex } from '../utils';
-import { bech32 } from 'bech32';
 
 export type State = {
   isConnected: boolean;
@@ -80,6 +81,12 @@ export const useStore = create<State>()((set, get) => ({
       })
     );
     try {
+      // Exit early if the Cardano dApp-Wallet Web Bridge (CIP 30) has not been injected
+      // This can happen in a SSR scenario for example
+      if (typeof window === 'undefined' || !(window as any).cardano) {
+        throw Error('window.cardano is undefined');
+      }
+
       const api: WalletApi = await (window as any).cardano[walletName].enable();
       const [rawAddress] = await api.getUnusedAddresses();
       const address = fromHex(rawAddress);
@@ -89,7 +96,7 @@ export const useStore = create<State>()((set, get) => ({
       const words = bech32.toWords(address);
 
       const bechAddr = bech32.encode(
-        address[0] == NetworkId.MAINNET ? 'addr' : 'addr_test',
+        address[0] === NetworkId.MAINNET ? 'addr' : 'addr_test',
         words,
         130
       );
