@@ -6,12 +6,17 @@ import create from 'zustand';
 import { NetworkId, WalletApi, WalletName } from '../typescript/cip30';
 import { fromHex } from '../utils';
 
+interface DetectedWallet {
+  name: WalletName;
+  icon: string;
+}
+
 export type State = {
   isConnected: boolean;
   isConnecting: boolean;
   isRefetchingBalance: boolean;
 
-  detectedWallets: WalletName[];
+  detectedWallets: DetectedWallet[];
 
   address: null | string;
 
@@ -84,9 +89,12 @@ export const useStore = create<State>()((set, get) => ({
 
     set(
       produce((draft: State) => {
-        draft.detectedWallets = Object.keys(ns).filter(ns =>
-          Object.keys(WalletName).includes(ns)
-        ) as WalletName[];
+        draft.detectedWallets = Object.keys(ns)
+          .filter(ns => Object.keys(WalletName).includes(ns))
+          .map(n => ({
+            name: n as WalletName,
+            icon: ns[n].icon,
+          }));
       })
     );
   },
