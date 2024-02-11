@@ -46,9 +46,9 @@ const useCardanoWallet = ({
     if (autoConnect && typeof localStorage !== 'undefined') {
       const connectedWalletName = localStorage.getItem(
         localStorageKey
-      ) as WalletName;
+      ) as WalletName | null;
 
-      if (!Object.values(WalletName).includes(connectedWalletName)) {
+      if (!connectedWalletName) {
         return;
       }
 

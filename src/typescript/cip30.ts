@@ -173,6 +173,10 @@ export enum WalletName {
   ETERNL = 'eternl',
   FLINT = 'flint',
   BEGIN = 'begin',
+  GERO = 'gero',
+  TYPHON = 'typhoncip30',
+  LACE = 'lace',
+  VESPR = 'vespr',
 }
 
 export interface WalletApi {

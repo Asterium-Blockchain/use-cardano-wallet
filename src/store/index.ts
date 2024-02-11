@@ -11,6 +11,8 @@ export type State = {
   isConnecting: boolean;
   isRefetchingBalance: boolean;
 
+  detectedWallets: WalletName[];
+
   address: null | string;
 
   /**
@@ -35,6 +37,7 @@ export type State = {
 const defaults = {
   isConnecting: false,
   isConnected: false,
+  detectedWallets: [],
   address: null,
   lovelaceBalance: null,
   api: null,
@@ -46,7 +49,6 @@ const defaults = {
 
 export const useStore = create<State>()((set, get) => ({
   ...defaults,
-
   disconnect: () => {
     set(defaults);
   },
@@ -69,6 +71,22 @@ export const useStore = create<State>()((set, get) => ({
       produce((draft: State) => {
         draft.isRefetchingBalance = false;
         draft.lovelaceBalance = lovelace;
+      })
+    );
+  },
+
+  getDetectedWallets: async () => {
+    if (typeof window === 'undefined' || !(window as any).cardano) {
+      return;
+    }
+
+    const ns = (window as any).cardano;
+
+    set(
+      produce((draft: State) => {
+        draft.detectedWallets = Object.keys(ns).filter(ns =>
+          Object.keys(WalletName).includes(ns)
+        ) as WalletName[];
       })
     );
   },
