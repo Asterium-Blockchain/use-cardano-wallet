@@ -4,11 +4,13 @@ import produce from 'immer';
 import create from 'zustand';
 
 import { NetworkId, WalletApi, WalletName } from '../typescript/cip30';
+import { walletPrettyNames } from '../wallets';
 import { fromHex } from '../utils';
 
-interface DetectedWallet {
+export interface DetectedWallet {
   name: WalletName;
   icon: string;
+  displayName: string;
 }
 
 export type State = {
@@ -91,9 +93,10 @@ export const useStore = create<State>()((set, get) => ({
     set(
       produce((draft: State) => {
         draft.detectedWallets = Object.keys(ns)
-          .filter(ns => Object.keys(WalletName).includes(ns))
+          .filter(ns => Object.values(WalletName).includes(ns as WalletName))
           .map(n => ({
             name: n as WalletName,
+            displayName: walletPrettyNames[n as WalletName],
             icon: ns[n].icon,
           }));
       })
@@ -107,6 +110,7 @@ export const useStore = create<State>()((set, get) => ({
         draft.selectedWallet = walletName;
       })
     );
+
     try {
       // Exit early if the Cardano dApp-Wallet Web Bridge (CIP 30) has not been injected
       // This can happen in a SSR scenario for example
@@ -115,7 +119,14 @@ export const useStore = create<State>()((set, get) => ({
       }
 
       const api: WalletApi = await (window as any).cardano[walletName].enable();
-      const [rawAddress] = await api.getUnusedAddresses();
+      let rawAddress = await api.getChangeAddress();
+      if (!rawAddress) {
+        [rawAddress] = await api.getUsedAddresses();
+      }
+      if (!rawAddress) {
+        [rawAddress] = await api.getUnusedAddresses();
+      }
+
       const address = fromHex(rawAddress);
       const balance = await api.getBalance();
 
@@ -142,6 +153,7 @@ export const useStore = create<State>()((set, get) => ({
         })
       );
     } catch (e) {
+      console.error(e);
       set(
         produce((draft: State) => {
           draft.isConnecting = false;
