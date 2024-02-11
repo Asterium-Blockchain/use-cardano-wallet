@@ -31,7 +31,7 @@ const defaultOptions: UseCardanoWalletOptions = {
   // prefetchUtxosInterval: null,
 };
 
-type ReturnVal = Omit<State, 'connect'> & {
+type ReturnVal = Omit<State, 'connect' | 'getDetectedWallets'> & {
   connect: (walletName: WalletName) => Promise<void>;
 };
 
@@ -39,7 +39,11 @@ const useCardanoWallet = ({
   autoConnect = true,
   localStorageKey = 'cardano-wallet-name',
 }: UseCardanoWalletOptions = defaultOptions): ReturnVal => {
-  const { connect: connectWithStore, ...rest } = useStore();
+  const { connect: connectWithStore, getDetectedWallets, ...rest } = useStore();
+
+  useEffect(() => {
+    getDetectedWallets();
+  }, [getDetectedWallets]);
 
   useEffect(() => {
     // Check localStorage in case we are in SSR

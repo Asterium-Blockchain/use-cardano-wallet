@@ -35,6 +35,7 @@ export type State = {
   network: null | NetworkId;
 
   connect: (walletName: WalletName, localStorageKey: string) => Promise<void>;
+  getDetectedWallets: () => void;
   disconnect: () => void;
   refetchBalance: () => Promise<void>;
 };
