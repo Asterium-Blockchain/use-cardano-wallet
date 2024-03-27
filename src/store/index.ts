@@ -1,5 +1,5 @@
 import { bech32 } from 'bech32';
-import cbor from 'cbor';
+import cbor, { decode } from 'cbor-x';
 import produce from 'immer';
 import create from 'zustand';
 
@@ -73,7 +73,12 @@ export const useStore = create<State>()((set, get) => ({
     );
 
     const balance = await api.getBalance();
-    const [lovelace] = cbor.decode(fromHex(balance));
+    const decodedBalance = decode(fromHex(balance));
+
+    const lovelace =
+      typeof decodedBalance === 'number'
+        ? decodedBalance.toString()
+        : (decodedBalance[0] ?? 0).toString();
 
     set(
       produce((draft: State) => {
