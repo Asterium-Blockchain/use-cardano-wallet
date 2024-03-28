@@ -1,11 +1,10 @@
 import { bech32 } from 'bech32';
-import cbor, { decode } from 'cbor-x';
 import produce from 'immer';
 import create from 'zustand';
 
 import { NetworkId, WalletApi, WalletName } from '../typescript/cip30';
 import { walletPrettyNames } from '../wallets';
-import { fromHex } from '../utils';
+import { fromHex, parseBalance } from '../utils';
 
 export interface DetectedWallet {
   name: WalletName;
@@ -73,12 +72,7 @@ export const useStore = create<State>()((set, get) => ({
     );
 
     const balance = await api.getBalance();
-    const decodedBalance = decode(fromHex(balance));
-
-    const lovelace =
-      typeof decodedBalance === 'number'
-        ? decodedBalance.toString()
-        : (decodedBalance[0] ?? 0).toString();
+    const lovelace = parseBalance(balance);
 
     set(
       produce((draft: State) => {
@@ -135,7 +129,7 @@ export const useStore = create<State>()((set, get) => ({
       const address = fromHex(rawAddress);
       const balance = await api.getBalance();
 
-      const decodedBalance = cbor.decode(fromHex(balance));
+      const decodedBalance = parseBalance(balance);
       const words = bech32.toWords(address);
 
       const bechAddr = bech32.encode(
@@ -151,7 +145,7 @@ export const useStore = create<State>()((set, get) => ({
           draft.isConnecting = false;
           draft.isConnected = true;
           draft.api = api;
-          draft.lovelaceBalance = decodedBalance[0] ?? 0;
+          draft.lovelaceBalance = decodedBalance;
           draft.address = bechAddr;
           draft.network = address[0] as NetworkId;
           draft.connectedWallet = walletName;
