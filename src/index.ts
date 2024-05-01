@@ -28,7 +28,6 @@ export type UseCardanoWalletOptions = {
 const defaultOptions: UseCardanoWalletOptions = {
   autoConnect: true,
   localStorageKey: 'cardano-wallet-name',
-  // prefetchUtxosInterval: null,
 };
 
 type ReturnVal = Omit<State, 'connect' | 'getDetectedWallets'> & {

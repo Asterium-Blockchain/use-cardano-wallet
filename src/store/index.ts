@@ -21,6 +21,8 @@ export type State = {
 
   address: null | string;
 
+  rewardAddress: null | string;
+
   /**
    * The wallet that was selected to connect.
    */
@@ -52,6 +54,7 @@ const defaults = {
   connectedWallet: null,
   network: null,
   isRefetchingBalance: false,
+  rewardAddress: null,
 };
 
 export const useStore = create<State>()((set, get) => ({
@@ -126,6 +129,18 @@ export const useStore = create<State>()((set, get) => ({
         [rawAddress] = await api.getUnusedAddresses();
       }
 
+      let [rewardAddress] = await api.getRewardAddresses();
+
+      if (rewardAddress) {
+        const buf = fromHex(rewardAddress);
+        const words = bech32.toWords(buf);
+        rewardAddress = bech32.encode(
+          buf[0] === NetworkId.MAINNET ? 'stake' : 'stake_test',
+          words,
+          130
+        );
+      }
+
       const address = fromHex(rawAddress);
       const balance = await api.getBalance();
 
@@ -146,6 +161,7 @@ export const useStore = create<State>()((set, get) => ({
           draft.isConnected = true;
           draft.api = api;
           draft.lovelaceBalance = decodedBalance;
+          draft.rewardAddress = rewardAddress;
           draft.address = bechAddr;
           draft.network = address[0] as NetworkId;
           draft.connectedWallet = walletName;
