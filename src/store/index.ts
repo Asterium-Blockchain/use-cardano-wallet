@@ -59,7 +59,7 @@ const defaults = {
 export const useStore = create<State>()((set, get) => ({
   ...defaults,
   disconnect: () => {
-    set(prev => {
+    set((prev: State) => {
       return {
         ...defaults,
         // Keep detected wallets
