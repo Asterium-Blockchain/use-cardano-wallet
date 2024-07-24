@@ -3,10 +3,9 @@ import produce from 'immer';
 import create from 'zustand';
 
 import { NetworkId, WalletApi, WalletName } from '../typescript/cip30';
-import { walletPrettyNames } from '../wallets';
-import { fromHex, parseBalance } from '../utils';
+import { fromHex, parseBalance, toWalletInfo } from '../utils';
 
-export interface DetectedWallet {
+export interface WalletInfo {
   name: WalletName;
   icon: string;
   displayName: string;
@@ -17,7 +16,7 @@ export type State = {
   isConnecting: boolean;
   isRefetchingBalance: boolean;
 
-  detectedWallets: DetectedWallet[];
+  detectedWallets: WalletInfo[];
 
   address: null | string;
 
@@ -26,12 +25,12 @@ export type State = {
   /**
    * The wallet that was selected to connect.
    */
-  selectedWallet: null | string;
+  selectedWallet: null | WalletInfo;
 
   /**
    * The wallet that is currently connected.
    */
-  connectedWallet: null | string;
+  connectedWallet: null | WalletInfo;
 
   lovelaceBalance: null | number;
   api: null | WalletApi;
@@ -96,11 +95,7 @@ export const useStore = create<State>()((set, get) => ({
       produce((draft: State) => {
         draft.detectedWallets = Object.keys(ns)
           .filter(ns => Object.values(WalletName).includes(ns as WalletName))
-          .map(n => ({
-            name: n as WalletName,
-            displayName: walletPrettyNames[n as WalletName],
-            icon: ns[n].icon,
-          }));
+          .map(n => toWalletInfo(n as WalletName));
       })
     );
   },
@@ -109,7 +104,7 @@ export const useStore = create<State>()((set, get) => ({
     set(
       produce((draft: State) => {
         draft.isConnecting = true;
-        draft.selectedWallet = walletName;
+        draft.selectedWallet = toWalletInfo(walletName);
       })
     );
 
@@ -164,7 +159,7 @@ export const useStore = create<State>()((set, get) => ({
           draft.rewardAddress = rewardAddress;
           draft.address = bechAddr;
           draft.network = address[0] as NetworkId;
-          draft.connectedWallet = walletName;
+          draft.connectedWallet = toWalletInfo(walletName);
         })
       );
     } catch (e) {

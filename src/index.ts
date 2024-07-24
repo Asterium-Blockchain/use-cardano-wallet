@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useStore, DetectedWallet as _, State } from './store';
+import { useStore, WalletInfo as _, State } from './store';
 import { WalletName } from './typescript/cip30';
 
 export type UseCardanoWalletOptions = {
