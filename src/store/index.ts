@@ -59,7 +59,13 @@ const defaults = {
 export const useStore = create<State>()((set, get) => ({
   ...defaults,
   disconnect: () => {
-    set(defaults);
+    set(prev => {
+      return {
+        ...defaults,
+        // Keep detected wallets
+        detectedWallets: prev.detectedWallets,
+      };
+    });
   },
 
   refetchBalance: async () => {

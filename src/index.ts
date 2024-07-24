@@ -38,7 +38,12 @@ const useCardanoWallet = ({
   autoConnect = true,
   localStorageKey = 'cardano-wallet-name',
 }: UseCardanoWalletOptions = defaultOptions): ReturnVal => {
-  const { connect: connectWithStore, getDetectedWallets, ...rest } = useStore();
+  const {
+    connect: connectWithStore,
+    getDetectedWallets,
+    disconnect: storeDisconnect,
+    ...rest
+  } = useStore();
 
   useEffect(() => {
     getDetectedWallets();
@@ -65,8 +70,12 @@ const useCardanoWallet = ({
   const connect = async (walletName: WalletName) => {
     await connectWithStore(walletName, localStorageKey);
   };
+  const disconnect = () => {
+    localStorage.removeItem(localStorageKey);
+    storeDisconnect();
+  };
 
-  return { connect, ...rest };
+  return { connect, disconnect, ...rest };
 };
 
 export * from './typescript/cip30';
